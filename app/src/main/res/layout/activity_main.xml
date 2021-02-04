@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+
+<FrameLayout android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent">
+   <!-- xmlns,... -->
+         <!-- FrameLayout: display elements on top of each other -->
+         <fragment
+         android:id="@+id/fragArImg"
+         android:layout_width="match_parent"
+         android:layout_height="match_parent"
+             android:name="com.example.trackingimages.TrackImgFrag"
+
+          />
+         <!-- note: own implementation that override ArFragment -->
+
+         <ImageView
+         android:id="@+id/fitToScanImg"
+         android:layout_width="match_parent"
+         android:layout_height="match_parent"
+         android:layout_gravity="center"
+         android:scaleType="fitCenter"
+         android:src="@drawable/fit_to_scan"
+         android:contentDescription="@string/fit_image_to_scan" />
+         </FrameLayout>
+
