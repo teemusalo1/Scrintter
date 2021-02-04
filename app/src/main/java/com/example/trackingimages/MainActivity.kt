@@ -16,7 +16,7 @@ import com.google.ar.sceneform.ux.TransformableNode
 
 class MainActivity : AppCompatActivity() {
 
-
+    //wassa
     private lateinit var arFrag: ArFragment
     private var viewRenderable: ViewRenderable? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -39,43 +39,40 @@ class MainActivity : AppCompatActivity() {
             if (arFrame.camera.trackingState != TrackingState.TRACKING) return
         }
 
-        val updatedAugmentedImages =
-            arFrame?.getUpdatedTrackables(AugmentedImage::class.java)
-        if (updatedAugmentedImages != null) {
-            updatedAugmentedImages.forEach {
-                when (it.trackingState) {
-                    null -> return@forEach
+        arFrame?.getUpdatedTrackables(AugmentedImage::class.java)?.forEach {
+            when (it.trackingState) {
+                null -> return@forEach
 
-                    TrackingState.PAUSED -> {
-                         // Image initially detected, but not enough data available to estimate its location in 3D space.
-                         // Do not use the image's pose and size estimates until the image's tracking state is tracking
-                         val text = "${R.string.detected_img_need_more_info} ${it.name}"
-                         Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
-                         }
-                         TrackingState.STOPPED -> {
-                             val text = "${R.string.track_stop} ${it.name}"
-                             Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
-                         }
-                             TrackingState.TRACKING -> {
-                                 val anchors = it.anchors
-                                 if (anchors.isEmpty()) {
-                                 fitToScanImg.visibility = View.GONE
-                                     // Create anchor and anchor node in the center of the image.
-                                  val pose = it.centerPose
-                                  val anchor = it.createAnchor(pose)
-                                  val anchorNode = AnchorNode(anchor)
-                                  //Attach anchor node in the scene
-                                  anchorNode.setParent(arFrag.arSceneView.scene)
-                                  // Create a node as a child node of anchor node, and define node's renderable according to augmented image
-                                  val imgNode = TransformableNode(arFrag.transformationSystem)
-                                  imgNode.setParent(anchorNode)
-                                  viewRenderable?.view?.findViewById<TextView>(R.id.txtImgTrack)?.text = it.name
-                                  imgNode.renderable = viewRenderable
-
-                             }
+                TrackingState.PAUSED -> {
+                    // Image initially detected, but not enough data available to estimate its location in 3D space.
+                    // Do not use the image's pose and size estimates until the image's tracking state is tracking
+                    val text = "${R.string.detected_img_need_more_info} ${it.name}"
+                    Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
+                }
+                TrackingState.STOPPED -> {
+                    val text = "${R.string.track_stop} ${it.name}"
+                    Toast.makeText(this, text, Toast.LENGTH_SHORT).show()
+                }
+                TrackingState.TRACKING -> {
+                    val anchors = it.anchors
+                    if (anchors.isEmpty()) {
+                        fitToScanImg.visibility = View.GONE
+                        // Create anchor and anchor node in the center of the image.
+                        val pose = it.centerPose
+                        val anchor = it.createAnchor(pose)
+                        val anchorNode = AnchorNode(anchor)
+                        //Attach anchor node in the scene
+                        anchorNode.setParent(arFrag.arSceneView.scene)
+                        // Create a node as a child node of anchor node, and define node's renderable according to augmented image
+                        val imgNode = TransformableNode(arFrag.transformationSystem)
+                        imgNode.setParent(anchorNode)
+                        viewRenderable?.view?.findViewById<TextView>(R.id.txtImgTrack)?.text =
+                            it.name
+                        imgNode.renderable = viewRenderable
+                    }
 
                 }
             }
         }
     }
-}}
+}
