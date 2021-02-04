@@ -1,6 +1,7 @@
 package com.example.trackingimages
 
 
+import android.net.Uri
 import android.os.Bundle
 import android.view.View
 import android.widget.ImageView
@@ -10,6 +11,8 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.ar.core.AugmentedImage
 import com.google.ar.core.TrackingState
 import com.google.ar.sceneform.AnchorNode
+import com.google.ar.sceneform.assets.RenderableSource
+import com.google.ar.sceneform.rendering.ModelRenderable
 import com.google.ar.sceneform.rendering.ViewRenderable
 import com.google.ar.sceneform.ux.ArFragment
 import com.google.ar.sceneform.ux.TransformableNode
@@ -19,16 +22,19 @@ class MainActivity : AppCompatActivity() {
     //wassa
     private lateinit var arFrag: ArFragment
     private var viewRenderable: ViewRenderable? = null
+    private var modelRenderable: ModelRenderable? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         arFrag = supportFragmentManager.findFragmentById(R.id.fragArImg) as ArFragment
-
-        val renderableFuture = ViewRenderable.builder()
-            .setView(this, R.layout.view_renderable)
-            .build()
-        renderableFuture.thenAccept { viewRenderable = it }
+        val uri = Uri.parse("https://github.com/KhronosGroup/glTF-Sample-Models/raw/master/2.0/Duck/glTF/Duck.gltf")
+        val renderableFuture = ModelRenderable.builder().setSource(this, RenderableSource.builder().setSource(this, uri, RenderableSource.SourceType.GLTF2)
+            .setScale(0.2f) // Scale the original to 20%.
+            .setRecenterMode(RenderableSource.RecenterMode.ROOT)
+            .build())
+            .setRegistryId("Duck").build()
+        renderableFuture.thenAccept { modelRenderable = it }
         arFrag.arSceneView.scene.addOnUpdateListener { frameUpdate() }
     }
 
@@ -64,11 +70,14 @@ class MainActivity : AppCompatActivity() {
                         //Attach anchor node in the scene
                         anchorNode.setParent(arFrag.arSceneView.scene)
                         // Create a node as a child node of anchor node, and define node's renderable according to augmented image
-                        val imgNode = TransformableNode(arFrag.transformationSystem)
-                        imgNode.setParent(anchorNode)
-                        viewRenderable?.view?.findViewById<TextView>(R.id.txtImgTrack)?.text =
-                            it.name
-                        imgNode.renderable = viewRenderable
+                        val mNode = TransformableNode(arFrag.transformationSystem)
+                        mNode.setParent(anchorNode)
+
+                            if(it.name == "ree"){
+                                mNode.renderable = modelRenderable
+                                mNode.select()
+                            }
+
                     }
 
                 }
