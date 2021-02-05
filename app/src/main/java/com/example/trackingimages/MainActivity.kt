@@ -28,12 +28,14 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
 
         arFrag = supportFragmentManager.findFragmentById(R.id.fragArImg) as ArFragment
-        val uri = Uri.parse("https://github.com/KhronosGroup/glTF-Sample-Models/raw/master/2.0/Duck/glTF/Duck.gltf")
-        val renderableFuture = ModelRenderable.builder().setSource(this, RenderableSource.builder().setSource(this, uri, RenderableSource.SourceType.GLTF2)
-            .setScale(0.2f) // Scale the original to 20%.
-            .setRecenterMode(RenderableSource.RecenterMode.ROOT)
-            .build())
-            .setRegistryId("Duck").build()
+        val mhUri =
+            Uri.parse("https://github.com/re-JECT-127/GLTFS/blob/main/mhglibfinal.glb")
+        val renderableFuture = ModelRenderable.builder().setSource(
+            this, RenderableSource.builder().setSource(this, mhUri, RenderableSource.SourceType.GLTF2)
+                .setRecenterMode(RenderableSource.RecenterMode.ROOT)
+                .build()
+        )
+            .setRegistryId("mhglb").build()
         renderableFuture.thenAccept { modelRenderable = it }
         arFrag.arSceneView.scene.addOnUpdateListener { frameUpdate() }
     }
@@ -73,11 +75,16 @@ class MainActivity : AppCompatActivity() {
                         val mNode = TransformableNode(arFrag.transformationSystem)
                         mNode.setParent(anchorNode)
 
-                            if(it.name == "ree"){
-                                mNode.renderable = modelRenderable
-                                mNode.select()
-                            }
+                        if (it.name == "ree") {
+                            mNode.renderable = modelRenderable
+                            mNode.select()
+                        }
 
+                        if (it.name == "lagiacrus") {
+                            mNode.renderable = modelRenderable
+                            mNode.select()
+
+                        }
                     }
 
                 }
