@@ -23,21 +23,17 @@ class MainActivity : AppCompatActivity() {
     private lateinit var arFrag: ArFragment
     private var viewRenderable: ViewRenderable? = null
     private var modelRenderable: ModelRenderable? = null
+    private lateinit var uri: Uri
+    private lateinit var id: String
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
         arFrag = supportFragmentManager.findFragmentById(R.id.fragArImg) as ArFragment
-        val mhUri =
-            Uri.parse("https://github.com/re-JECT-127/GLTFS/blob/main/mhglibfinal.glb")
-        val renderableFuture = ModelRenderable.builder().setSource(
-            this, RenderableSource.builder().setSource(this, mhUri, RenderableSource.SourceType.GLTF2)
-                .setRecenterMode(RenderableSource.RecenterMode.ROOT)
-                .build()
-        )
-            .setRegistryId("mhglb").build()
-        renderableFuture.thenAccept { modelRenderable = it }
+
         arFrag.arSceneView.scene.addOnUpdateListener { frameUpdate() }
+
+
     }
 
     private fun frameUpdate() {
@@ -63,9 +59,21 @@ class MainActivity : AppCompatActivity() {
                 }
                 TrackingState.TRACKING -> {
                     val anchors = it.anchors
+
+
                     if (anchors.isEmpty()) {
                         fitToScanImg.visibility = View.GONE
                         // Create anchor and anchor node in the center of the image.
+                        if (it.name == "ree" ) {
+                            uri = Uri.parse("https://raw.githubusercontent.com/teemusalo1/Scrintter/main/app/src/main/assets/mhglibfinal.gltf")
+                            id = "mhglib"
+                            getModel()
+                        }
+                        if(it.name == "thetimlbr"){
+                            uri = Uri.parse("https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Avocado/glTF/Avocado.gltf")
+                            id = "Avocado"
+                            getModel()
+                        }
                         val pose = it.centerPose
                         val anchor = it.createAnchor(pose)
                         val anchorNode = AnchorNode(anchor)
@@ -75,20 +83,25 @@ class MainActivity : AppCompatActivity() {
                         val mNode = TransformableNode(arFrag.transformationSystem)
                         mNode.setParent(anchorNode)
 
-                        if (it.name == "ree") {
-                            mNode.renderable = modelRenderable
-                            mNode.select()
-                        }
 
-                        if (it.name == "lagiacrus") {
-                            mNode.renderable = modelRenderable
-                            mNode.select()
 
-                        }
+                        mNode.renderable = modelRenderable
+                        mNode.select()
+
+
                     }
 
                 }
             }
         }
+    }
+    fun getModel(){
+        val renderableFuture = ModelRenderable.builder().setSource(this, RenderableSource.builder().setSource(this, uri, RenderableSource.SourceType.GLTF2)
+            .setScale(0.6f) // Scale the original to 20%.
+            .setRecenterMode(RenderableSource.RecenterMode.ROOT)
+            .build())
+            .setRegistryId(id).build()
+        renderableFuture.thenAccept { modelRenderable = it }
+
     }
 }
